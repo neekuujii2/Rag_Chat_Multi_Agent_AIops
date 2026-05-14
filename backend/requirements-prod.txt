@@ -1,4 +1,7 @@
 -r requirements.txt
+pytest>=7.0.0
+pytest-asyncio>=0.21.0  # if you have async tests
+pytest-cov>=4.0.0       # for coverage reports
 gunicorn>=23.0.0
 celery[redis]>=5.4.0
 flower>=2.0.1
