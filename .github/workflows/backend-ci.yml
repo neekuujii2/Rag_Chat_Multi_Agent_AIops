@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r backend/requirements-dev.txt -r backend/requirements-prod.txt bandit semgrep safety pip-audit
-      - run: pytest backend/tests
+      - run: PYTHONPATH=backend pytest backend/tests
       - run: bandit -r backend/app -f json -o bandit-report.json
       - run: semgrep scan --config auto backend --json --output semgrep-report.json
       - run: pip-audit -r backend/requirements-prod.txt
