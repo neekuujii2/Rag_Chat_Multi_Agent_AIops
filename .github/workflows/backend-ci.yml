@@ -27,7 +27,7 @@ jobs:
       - run: semgrep scan --config auto backend --json --output semgrep-report.json
       - run: pip-audit -r backend/requirements-prod.txt
       - run: safety check -r backend/requirements-prod.txt --output json > safety-report.json
-      - uses: aquasecurity/trivy-action@0.30.0
+      - uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: backend
