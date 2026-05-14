@@ -1,0 +1,6 @@
+namespace: rag-platform-staging
+nameSuffix: -staging
+resources:
+  - ../../base
+patches:
+  - path: patch-configmap.yaml

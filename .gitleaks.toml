@@ -1,0 +1,11 @@
+title = "RAG Platform GitLeaks Policy"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Example environment files"
+paths = [
+  '''\.env\.example$''',
+  '''\.env\.platform\.example$'''
+]

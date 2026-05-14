@@ -1,0 +1,5 @@
+aws_region        = "ap-south-1"
+bucket_suffix     = "123456789012"
+db_username       = "rag"
+db_password       = "replace-me"
+redis_auth_token  = "replace-me"

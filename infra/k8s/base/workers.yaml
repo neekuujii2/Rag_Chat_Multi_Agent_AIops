@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  namespace: rag-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      serviceAccountName: rag-backend
+      containers:
+        - name: worker
+          image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/rag-backend:latest
+          command: ["celery", "-A", "app.celery_app:celery_app", "worker", "--loglevel=INFO", "--concurrency=4"]
+          envFrom:
+            - configMapRef:
+                name: rag-platform-config
+            - secretRef:
+                name: rag-platform-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beat
+  namespace: rag-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery-beat
+  template:
+    metadata:
+      labels:
+        app: celery-beat
+    spec:
+      serviceAccountName: rag-backend
+      containers:
+        - name: beat
+          image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/rag-backend:latest
+          command: ["celery", "-A", "app.celery_app:celery_app", "beat", "--loglevel=INFO"]
+          envFrom:
+            - configMapRef:
+                name: rag-platform-config
+            - secretRef:
+                name: rag-platform-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rag-platform.fullname" . }}-frontend
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "rag-platform.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ include "rag-platform.fullname" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          ports:
+            - containerPort: 8080
+          resources:
+{{ toYaml .Values.frontend.resources | indent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rag-platform.fullname" . }}-frontend
+spec:
+  selector:
+    app: {{ include "rag-platform.fullname" . }}-frontend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

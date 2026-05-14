@@ -1,0 +1,21 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: rag-backend
+  namespace: rag-platform
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: rag-backend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: rag-frontend
+  namespace: rag-platform
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: rag-frontend

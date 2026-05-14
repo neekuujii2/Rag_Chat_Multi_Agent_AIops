@@ -1,0 +1,11 @@
+route:
+  receiver: slack-notifications
+  group_by: ["alertname", "cluster", "service"]
+  repeat_interval: 4h
+
+receivers:
+  - name: slack-notifications
+    slack_configs:
+      - api_url: ${SLACK_WEBHOOK_URL}
+        channel: "#platform-alerts"
+        send_resolved: true

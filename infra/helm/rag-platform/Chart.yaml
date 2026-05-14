@@ -1,0 +1,6 @@
+apiVersion: v2
+name: rag-platform
+description: Enterprise deployment chart for the RAG PDF Chat multi-agent platform.
+type: application
+version: 0.1.0
+appVersion: "2.0.0"

@@ -1,0 +1,5 @@
+- rule: Unexpected Shell In Backend Container
+  desc: Detect shell spawned in production backend container.
+  condition: container and k8s.ns.name = rag-platform and k8s.pod.label.app = rag-backend and spawned_process and proc.name in (bash, sh)
+  output: "Unexpected shell in backend container (user=%user.name command=%proc.cmdline pod=%k8s.pod.name)"
+  priority: WARNING

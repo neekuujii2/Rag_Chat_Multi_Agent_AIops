@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: workloads-must-have-standard-labels
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod", "Service"]
+      - apiGroups: ["apps"]
+        kinds: ["Deployment", "StatefulSet"]

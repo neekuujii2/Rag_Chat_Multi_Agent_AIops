@@ -1,0 +1,259 @@
+version: "3.9"
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-backend-env: &backend-env
+  APP_ENV: local
+  LOG_LEVEL: INFO
+  LOG_FORMAT: json
+  CORS_ORIGINS: https://app.local.rag.internal,http://localhost:5173,http://127.0.0.1:5173
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+  OPENROUTER_API_BASE: ${OPENROUTER_API_BASE:-https://openrouter.ai/api/v1}
+  DEFAULT_PROVIDER: ${DEFAULT_PROVIDER:-openrouter}
+  DEFAULT_MODEL: ${DEFAULT_MODEL:-openai/gpt-4o-mini}
+  REDIS_URL: redis://:${REDIS_PASSWORD:-ragredis}@redis:6379/0
+  CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-ragredis}@redis:6379/0
+  CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-ragredis}@redis:6379/1
+  POSTGRES_DSN: postgresql+psycopg://${POSTGRES_USER:-rag}:${POSTGRES_PASSWORD:-ragpostgres}@postgres:5432/${POSTGRES_DB:-rag}
+  QDRANT_URL: http://qdrant:6333
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+  SENTRY_DSN: ${SENTRY_DSN:-}
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./infra/nginx/certs:/etc/nginx/certs:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging: *default-logging
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.prod
+      args:
+        VITE_API_BASE_URL: /api
+        VITE_APP_ENV: local
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging: *default-logging
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment: *backend-env
+    command:
+      - gunicorn
+      - app.main:app
+      - --bind
+      - 0.0.0.0:8000
+      - --workers
+      - "2"
+      - --worker-class
+      - uvicorn.workers.UvicornWorker
+    volumes:
+      - backend-runtime:/app/runtime
+      - backend-uploads:/app/uploads
+      - backend-faiss:/app/faiss_index
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment: *backend-env
+    command: ["celery", "-A", "app.celery_app:celery_app", "worker", "--loglevel=INFO", "--concurrency=2"]
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    logging: *default-logging
+
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment: *backend-env
+    command: ["celery", "-A", "app.celery_app:celery_app", "beat", "--loglevel=INFO"]
+    depends_on:
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+
+  flower:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment: *backend-env
+    command: ["celery", "-A", "app.celery_app:celery_app", "flower", "--port=5555"]
+    depends_on:
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rag}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ragpostgres}
+      POSTGRES_DB: ${POSTGRES_DB:-rag}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rag} -d ${POSTGRES_DB:-rag}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging: *default-logging
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["sh", "-c", "redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-ragredis}"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD:-ragredis} ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging: *default-logging
+
+  qdrant:
+    image: qdrant/qdrant:v1.13.4
+    volumes:
+      - qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6333/healthz >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    logging: *default-logging
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./infra/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/monitoring/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    logging: *default-logging
+
+  grafana:
+    image: grafana/grafana:11.5.1
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./infra/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./infra/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    logging: *default-logging
+
+  loki:
+    image: grafana/loki:3.3.2
+    command: ["-config.file=/etc/loki/config.yaml"]
+    volumes:
+      - ./infra/monitoring/loki/config.yml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+    logging: *default-logging
+
+  fluent-bit:
+    image: cr.fluentbit.io/fluent/fluent-bit:3.2.5
+    profiles: ["linux-observability"]
+    command: ["-c", "/fluent-bit/etc/fluent-bit.conf"]
+    volumes:
+      - ./infra/monitoring/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./infra/monitoring/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - loki
+    logging: *default-logging
+
+  alertmanager:
+    image: prom/alertmanager:v0.28.0
+    command: ["--config.file=/etc/alertmanager/alertmanager.yml"]
+    volumes:
+      - ./infra/monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    logging: *default-logging
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.2
+    profiles: ["linux-observability"]
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    logging: *default-logging
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.63.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    logging: *default-logging
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.117.0
+    command: ["--config=/etc/otel-collector/config.yaml"]
+    volumes:
+      - ./infra/monitoring/otel/collector.yaml:/etc/otel-collector/config.yaml:ro
+    depends_on:
+      - jaeger
+      - prometheus
+    logging: *default-logging
+
+volumes:
+  backend-runtime:
+  backend-uploads:
+  backend-faiss:
+  postgres-data:
+  redis-data:
+  qdrant-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:

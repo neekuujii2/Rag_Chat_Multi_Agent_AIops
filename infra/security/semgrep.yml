@@ -1,0 +1,12 @@
+rules:
+  - id: insecure-subprocess-shell
+    languages: [python]
+    message: Avoid shell=True in production services.
+    severity: ERROR
+    patterns:
+      - pattern: subprocess.$FUNC(..., shell=True, ...)
+  - id: weak-cors-wildcard
+    languages: [python]
+    message: Avoid wildcard CORS in production.
+    severity: WARNING
+    pattern: allow_origins=["*"]

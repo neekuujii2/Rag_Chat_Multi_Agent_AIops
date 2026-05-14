@@ -1,0 +1,45 @@
+name: backend-ci
+
+on:
+  push:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r backend/requirements-dev.txt -r backend/requirements-prod.txt bandit semgrep safety pip-audit
+      - run: pytest backend/tests
+      - run: bandit -r backend/app -f json -o bandit-report.json
+      - run: semgrep scan --config auto backend --json --output semgrep-report.json
+      - run: pip-audit -r backend/requirements-prod.txt
+      - run: safety check -r backend/requirements-prod.txt --output json > safety-report.json
+      - uses: aquasecurity/trivy-action@0.30.0
+        with:
+          scan-type: fs
+          scan-ref: backend
+          format: sarif
+          output: trivy-backend.sarif
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-security-reports
+          path: |
+            bandit-report.json
+            semgrep-report.json
+            safety-report.json
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-backend.sarif

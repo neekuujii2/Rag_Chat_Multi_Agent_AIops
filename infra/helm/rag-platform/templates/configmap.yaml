@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "rag-platform.fullname" . }}-config
+data:
+  APP_ENV: {{ .Values.global.environment | quote }}
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  DEFAULT_PROVIDER: {{ .Values.backend.config.DEFAULT_PROVIDER | quote }}
+  DEFAULT_MODEL: {{ .Values.backend.config.DEFAULT_MODEL | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.backend.config.OTEL_EXPORTER_OTLP_ENDPOINT | quote }}
+  QDRANT_URL: {{ .Values.backend.config.QDRANT_URL | quote }}

@@ -1,0 +1,6 @@
+namespace: rag-platform-dev
+nameSuffix: -dev
+resources:
+  - ../../base
+patches:
+  - path: patch-configmap.yaml

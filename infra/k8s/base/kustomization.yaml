@@ -1,0 +1,14 @@
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets-placeholder.yaml
+  - serviceaccount.yaml
+  - backend-deployment.yaml
+  - backend-service.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - workers.yaml
+  - ingress.yaml
+  - autoscaling.yaml
+  - pdb.yaml
+  - networkpolicy.yaml
