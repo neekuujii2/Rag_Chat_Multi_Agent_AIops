@@ -1,485 +1,601 @@
-# RAG PDF Chat - Python, React, Tailwind CSS, FastAPI, SSE Streaming, Multi-Agent Pipeline, Text Chunking, Conversion History, Device-Local Data, Anonymous Sessions FullStack Project (Contextual Document Assistant)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Vite](https://img.shields.io/badge/Vite-8.0.9-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![React](https://img.shields.io/badge/React-18.3.1-blue?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+# Enterprise RAG PDF Chat Multi-Agent AI Platform
 
-A production-style, educational full-stack RAG project that demonstrates how to turn PDF documents into searchable knowledge and chat with them using modern AI models. It is designed for learners and builders who want to understand document chunking, embeddings, vector search, SSE streaming responses, multi-provider model fallback, and practical deployment (Vercel + Coolify VPS) end to end.
+## Production-Grade Full Stack AI System with DevOps, DevSecOps, AIOps, Kubernetes, Terraform, AWS & Observability
 
-- **Frontend Live Demo:** [https://pdf-chat-scrapper.vercel.app/](https://pdf-chat-scrapper.vercel.app/)
-- **Backend Live Demo:** [https://rag-pdf-backend.arnobmahmud.com/](https://rag-pdf-backend.arnobmahmud.com/)
-
-![Image 1](https://github.com/user-attachments/assets/d0c1ed31-8c98-4191-b388-8c0d0f55ebda)
-![Image 2](https://github.com/user-attachments/assets/3557b9f2-9e33-40dc-89ff-b616db68bd84)
-![Image 3](https://github.com/user-attachments/assets/0046ca91-1066-435a-89a7-ef442e8a914e)
-![Image 4](https://github.com/user-attachments/assets/eb5e9e49-9993-4c96-939b-a1d1703aa835)
-![Image 5](https://github.com/user-attachments/assets/84a8f448-8918-47d9-8917-3f4e539ea8d0)
-![Image 6](https://github.com/user-attachments/assets/e4ac4e75-c154-4cde-9c96-0640f4b9fcba)
-![Image 7](https://github.com/user-attachments/assets/f075f714-0ceb-47cc-bb1d-54c14602c345)
-![Image 8](https://github.com/user-attachments/assets/bf8f07a1-7185-4b4e-ba45-600ec58339f4)
-![Image 9](https://github.com/user-attachments/assets/bda5e587-f66f-4bb0-a429-95a8a1396912)
-![Image 10](https://github.com/user-attachments/assets/f1353646-bc0c-425e-a037-880c16190ecb)
-
-## Table of contents
-
-- [Project overview](#project-overview)
-- [What you will learn](#what-you-will-learn)
-- [Keywords and glossary (beginner-friendly)](#keywords-and-glossary-beginner-friendly)
-- [Architecture walkthrough](#architecture-walkthrough)
-- [Tech stack and dependencies](#tech-stack-and-dependencies)
-- [Project structure and file walkthrough](#project-structure-and-file-walkthrough)
-- [Core features and how they work](#core-features-and-how-they-work)
-- [API reference](#api-reference)
-- [Environment variables (`.env`) explained](#environment-variables-env-explained)
-- [How to run locally](#how-to-run-locally)
-- [How to deploy (Vercel + Coolify VPS)](#how-to-deploy-vercel--coolify-vps)
-- [How to reuse this project in your own apps](#how-to-reuse-this-project-in-your-own-apps)
-- [Quality checks and scripts](#quality-checks-and-scripts)
-- [Troubleshooting notes](#troubleshooting-notes)
-- [Contributing](#contributing)
-- [License](#license)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![FastAPI](https://img.shields.io/badge/FastAPI-Production-009688?logo=fastapi)
+![Docker](https://img.shields.io/badge/Docker-Production-blue?logo=docker)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-EKS-blue?logo=kubernetes)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4?logo=terraform)
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange?logo=amazonaws)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange?logo=prometheus)
+![Grafana](https://img.shields.io/badge/Grafana-Observability-F46800?logo=grafana)
+![CI/CD](https://img.shields.io/badge/CI/CD-GitHub_Actions-black?logo=githubactions)
+![DevSecOps](https://img.shields.io/badge/DevSecOps-Enabled-red)
 
 ---
 
-## Project overview
+# Overview
 
-This app lets a user upload a PDF and ask questions about it. The backend parses PDF text, splits it into chunks, embeds each chunk into vectors, stores vectors in FAISS, retrieves relevant context for each question, then sends that context to an LLM for grounded responses.
+Enterprise-grade AI-powered RAG (Retrieval-Augmented Generation) platform designed for scalable document intelligence, contextual chat, multi-agent orchestration, and production deployment.
 
-It also includes:
+The platform combines:
 
-- **Anonymous session isolation** (per browser via session header)
-- **Streaming answers (SSE)** and non-streaming mode
-- **Model selector with provider fallback**
-- **Optional source snippets**
-- **Rate limiting**
-- **Device-local saved chat history in IndexedDB**
-- **Deployment-ready Docker/Coolify setup**
+- Multi-Agent AI pipelines
+- PDF ingestion and semantic retrieval
+- Streaming LLM responses
+- Vector search
+- AI observability
+- Kubernetes orchestration
+- DevSecOps security controls
+- CI/CD automation
+- AWS cloud infrastructure
+- Centralized monitoring and tracing
 
----
-
-## What you will learn
-
-- How RAG (Retrieval Augmented Generation) works in a practical, production-like app.
-- How to build a TypeScript React frontend that calls a FastAPI backend.
-- How to wire PDF upload, chunking, embeddings, and vector search.
-- How to stream model output token-by-token over SSE.
-- How to maintain per-browser isolation without user authentication.
-- How to deploy frontend and backend separately with correct CORS and environment config.
+This repository demonstrates how to build and deploy a real-world AI SaaS architecture using modern cloud-native engineering practices.
 
 ---
 
-## Keywords and glossary (beginner-friendly)
+# Enterprise Features
 
-| Term             | Meaning                                                                         |
-| ---------------- | ------------------------------------------------------------------------------- |
-| **RAG**          | Retrieve relevant document context first, then generate answer with LLM.        |
-| **Embedding**    | Numeric vector representation of text meaning.                                  |
-| **FAISS**        | Fast vector database/index for similarity search.                               |
-| **Chunking**     | Splitting long PDF text into smaller pieces for retrieval.                      |
-| **SSE**          | Server-Sent Events for live streaming answer text.                              |
-| **Session ID**   | Unique browser identifier used to isolate each user’s PDF vector index.         |
-| **LRU eviction** | Removes least-recently-used session indexes when cap is reached.                |
-| **CORS**         | Browser security rule controlling which frontend origins can call backend APIs. |
+- [x] Multi-Agent AI Pipeline
+- [x] Streaming SSE Responses
+- [x] PDF Semantic Search
+- [x] Vector Embeddings
+- [x] Dockerized Services
+- [x] Kubernetes Ready
+- [x] Terraform Infrastructure
+- [x] GitHub Actions CI/CD
+- [x] Centralized Monitoring
+- [x] Distributed Tracing
+- [x] DevSecOps Tooling
+- [x] AWS Cloud Deployment
+- [x] Background Workers
+- [x] AI Observability
+- [x] Reverse Proxy & TLS
+- [x] Production Logging
+- [x] Async Processing with Celery
+- [x] RBAC-ready Architecture
+- [x] Infrastructure as Code
+- [x] Auto Scaling Support
 
 ---
 
-## Architecture walkthrough
+# System Architecture
 
 ```text
-React SPA (frontend)
-  ├─ localStorage: anonymous session UUID (X-Chat-Session-Id)
-  ├─ IndexedDB: saved chat history by PDF
-  └─ Calls FastAPI endpoints (/upload, /ask, /ask/stream, /status, /models)
+Users
+   │
+CloudFront CDN
+   │
+Application Load Balancer
+   │
+────────────────────────────
+│        Frontend           │
+│ React + Vite              │
+────────────────────────────
+   │
+Nginx Reverse Proxy
+   │
+────────────────────────────
+│ FastAPI Multi-Agent APIs  │
+│ LangGraph Pipelines       │
+────────────────────────────
+   │
+────────────────────────────
+│ Celery Workers            │
+│ PDF Processing            │
+│ Embedding Pipelines       │
+────────────────────────────
+   │
+────────────────────────────
+│ Redis │ PostgreSQL │ Qdrant │
+────────────────────────────
+   │
+────────────────────────────
+│ OpenRouter / LLM APIs     │
+────────────────────────────
 
-FastAPI backend
-  ├─ PDF loader + text splitter
-  ├─ Embedding service + FAISS vector store
-  ├─ Agent pipeline (retrieve -> optimize -> answer -> validate)
-  ├─ Optional source snippets
-  ├─ Rate limiting and session cleanup
-  └─ Optional Sentry tunnel (/api/oversight)
-```
+Monitoring:
+Prometheus + Grafana + Loki + OpenTelemetry
 
----
+Security:
+Trivy + Falco + Semgrep + RBAC
 
-## Tech stack and dependencies
-
-### Frontend
-
-- **React 18 + TypeScript**
-- **Vite**
-- **Tailwind CSS**
-- **Framer Motion**
-- **React Router**
-- **Radix UI primitives**
-- **Sonner toast notifications**
-- **Sentry browser SDK (optional)**
-
-### Backend
-
-- **FastAPI + Uvicorn**
-- **Pydantic + pydantic-settings**
-- **LangChain ecosystem**
-- **FAISS CPU**
-- **sentence-transformers** (local embedding fallback)
-- **httpx / aiohttp**
-- **Tenacity retries**
-
-### Why this stack is useful for learning
-
-- It separates UI concerns from AI/backend concerns cleanly.
-- It demonstrates real deployment constraints (CORS, env vars, reverse proxy).
-- It includes robust failover behavior and operational safety defaults.
+Infrastructure:
+Terraform + Kubernetes + AWS
+````
 
 ---
 
-## Project structure and file walkthrough
+# Tech Stack
+
+## Frontend
+
+* React 18
+* TypeScript
+* Vite
+* Tailwind CSS
+* Framer Motion
+* Radix UI
+* React Router
+
+## Backend
+
+* FastAPI
+* Python 3.11+
+* LangChain
+* LangGraph
+* Celery
+* Redis
+* PostgreSQL
+* Qdrant / FAISS
+* SSE Streaming
+
+## AI & LLM
+
+* OpenRouter
+* OpenAI Models
+* Multi-Agent Pipelines
+* Embedding Models
+* RAG Architecture
+
+## DevOps
+
+* Docker
+* Docker Compose
+* Kubernetes
+* Helm
+* Terraform
+* GitHub Actions
+* Nginx
+
+## Observability
+
+* Prometheus
+* Grafana
+* Loki
+* OpenTelemetry
+* Jaeger
+* Langfuse / Phoenix
+
+## DevSecOps
+
+* Trivy
+* Bandit
+* Semgrep
+* GitLeaks
+* Falco
+* Kyverno
+
+## Cloud
+
+* AWS EKS/ECS
+* RDS PostgreSQL
+* Elasticache Redis
+* S3
+* CloudFront
+* Route53
+* ACM
+* Secrets Manager
+
+---
+
+# Project Structure
 
 ```text
-rag-pdf-chat/
-├── README.md
-├── docs/                            # deployment and operational guides
+RAG-PDF-Chat-Multi-Agent-Pipeline/
+│
 ├── frontend/
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.ts
 │   ├── src/
-│   │   ├── main.tsx                # app bootstrap
-│   │   ├── App.tsx                 # routes and app-level providers
-│   │   ├── pages/                  # home, chat, about, api-status
-│   │   ├── components/
-│   │   │   ├── chat/               # chat container, model selector, upload, input
-│   │   │   ├── layout/             # header/footer/layout helpers
-│   │   │   ├── sections/           # marketing/documentation sections
-│   │   │   └── ui/                 # reusable UI primitives
-│   │   ├── hooks/                  # data and behavior hooks
-│   │   ├── lib/                    # api/env/storage/session logic
-│   │   └── types/                  # shared TS types
-│   └── public/
-└── backend/
-    ├── app/
-    │   ├── main.py                 # app setup and middleware
-    │   ├── config.py               # settings/env/provider config
-    │   ├── routes/                 # health, upload, chat, oversight
-    │   ├── services/               # vector store, rate limiting, cleanup
-    │   └── agents/                 # multi-step answer pipeline
-    ├── requirements.txt
-    ├── requirements-dev.txt
-    ├── .env.example
-    ├── Dockerfile
-    └── .dockerignore
+│   ├── public/
+│   ├── Dockerfile.prod
+│   └── package.json
+│
+├── backend/
+│   ├── app/
+│   │   ├── agents/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── observability.py
+│   │   ├── celery_app.py
+│   │   ├── tasks.py
+│   │   └── main.py
+│   ├── Dockerfile.prod
+│   └── requirements.txt
+│
+├── infra/
+│   ├── terraform/
+│   ├── helm/
+│   ├── k8s/
+│   ├── monitoring/
+│   ├── nginx/
+│   ├── security/
+│   └── scripts/
+│
+├── docs/
+│   └── architecture/
+│
+├── .github/
+│   └── workflows/
+│
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── Makefile
+└── README.md
 ```
 
 ---
 
-## Core features and how they work
+# DevOps Features
 
-### 1) PDF upload and indexing
+* Multi-stage Docker builds
+* Docker Compose orchestration
+* Kubernetes deployment manifests
+* Helm chart support
+* Terraform infrastructure provisioning
+* Blue-Green deployment strategy
+* Rolling deployments
+* Auto-scaling support
+* Zero-downtime deployment
+* Production-ready Nginx reverse proxy
+* Multi-environment support:
 
-User uploads a PDF through the frontend. Backend:
-
-1. extracts text
-2. chunks it
-3. embeds each chunk
-4. stores vectors in FAISS under session-specific folder
-
----
-
-### 2) Chat with streaming or non-streaming
-
-- **Streaming on** -> uses SSE (`/ask/stream`) for live token output.
-- **Streaming off** -> classic JSON response (`/ask`).
-
----
-
-### 3) Source snippets toggle
-
-- When enabled, backend returns source context snippets (if available).
-- Helps explain where the answer came from.
+  * Development
+  * Staging
+  * Production
 
 ---
 
-### 4) Multi-model and fallback behavior
+# DevSecOps Features
 
-- Frontend can select a preferred model.
-- Backend tries configured providers and can fall back when a provider fails or is over quota.
+## Security Scanning
+
+* Trivy container scanning
+* Bandit Python security checks
+* Semgrep static analysis
+* GitLeaks secrets detection
+
+## Runtime Security
+
+* Falco runtime monitoring
+* Kubernetes policy enforcement
+* Secure ingress rules
+* Network segmentation
+
+## AI Security
+
+* Prompt injection mitigation
+* RAG sanitization
+* File upload validation
+* Secure PDF processing
+* Output filtering
+* Content moderation hooks
+
+## Authentication & Access
+
+* JWT-ready architecture
+* OAuth2-ready integration
+* RBAC support
+* Multi-tenant isolation
 
 ---
 
-### 5) Session isolation and local history
+# AIOps & Observability
 
-- Browser keeps anonymous session UUID.
-- Backend uses `X-Chat-Session-Id` to separate vector indexes per browser.
-- Frontend stores transcript locally in IndexedDB per PDF.
+## Monitoring
+
+* Prometheus metrics collection
+* Grafana dashboards
+* Container monitoring
+* Kubernetes monitoring
+* API latency tracking
+
+## Logging
+
+* Loki centralized logs
+* Structured application logs
+* Error aggregation
+* Security event logging
+
+## Distributed Tracing
+
+* OpenTelemetry instrumentation
+* Jaeger tracing
+* Request lifecycle tracking
+* Agent execution tracing
+
+## AI Observability
+
+* Token usage tracking
+* LLM latency monitoring
+* Prompt/response tracing
+* Retrieval quality analysis
+* Hallucination monitoring
+* Embedding performance tracking
 
 ---
 
-### 6) Rate limits and cleanup
+# Core Features
 
-- Per-IP request limits for upload and ask routes.
-- Startup cleanup removes stale session FAISS folders.
+## PDF Processing Pipeline
+
+* PDF upload
+* Text extraction
+* Intelligent chunking
+* Embedding generation
+* Vector indexing
+* Semantic retrieval
+
+## Multi-Agent Pipeline
+
+* Retrieval agent
+* Context optimization agent
+* Response generation agent
+* Validation agent
+
+## Streaming Responses
+
+* SSE-based streaming
+* Real-time token output
+* Low-latency UX
+
+## Async Processing
+
+* Celery workers
+* Background indexing
+* Queue-based workloads
+* Retry handling
 
 ---
 
-## API reference
+# Local Development Setup
 
-> Most data routes require `X-Chat-Session-Id` header.
-
-| Method | Endpoint         | Purpose                           |
-| ------ | ---------------- | --------------------------------- |
-| `GET`  | `/`              | Basic backend status              |
-| `GET`  | `/health`        | Health check                      |
-| `GET`  | `/models`        | Available models/providers        |
-| `GET`  | `/pipeline-info` | Explains pipeline stages          |
-| `GET`  | `/status`        | Session PDF loaded status         |
-| `POST` | `/upload`        | Upload PDF and build index        |
-| `POST` | `/ask`           | Ask question (non-streaming JSON) |
-| `POST` | `/ask/stream`    | Ask question (SSE streaming)      |
-| `POST` | `/api/oversight` | Sentry tunnel endpoint            |
-
-### Example request
+## Clone Repository
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/ask" \
-  -H "Content-Type: application/json" \
-  -H "X-Chat-Session-Id: 11111111-2222-4333-8444-555555555555" \
-  -d '{"question":"Summarize this PDF","model":"openai/gpt-4o-mini","include_sources":true}'
+git clone <your-repository-url>
+cd RAG-PDF-Chat-Multi-Agent-Pipeline
 ```
 
 ---
 
-## Environment variables (`.env`) explained
+# Environment Variables
 
-This project **does need backend environment variables** for real AI usage.
-
-### Backend (`backend/.env`)
-
-Create from template:
+## Backend
 
 ```bash
 cd backend
 cp .env.example .env
 ```
 
-#### Minimum required
+Example:
 
 ```env
-OPENROUTER_API_KEY=your_openrouter_key
+OPENROUTER_API_KEY=your_api_key
 OPENROUTER_API_BASE=https://openrouter.ai/api/v1
-```
 
-#### Commonly used variables
+POSTGRES_DB=rag_platform
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
 
-| Variable                       | Required           | Purpose                  |
-| ------------------------------ | ------------------ | ------------------------ |
-| `OPENROUTER_API_KEY`           | Yes                | Main provider key        |
-| `OPENROUTER_API_BASE`          | Yes                | OpenRouter base URL      |
-| `DEFAULT_MODEL`                | Recommended        | Default model ID         |
-| `DEFAULT_PROVIDER`             | Recommended        | Provider selection hint  |
-| `CORS_ORIGINS`                 | Yes for deployment | Allowed frontend origins |
-| `FAISS_PERSIST_DIR`            | Recommended        | Vector index directory   |
-| `MAX_VECTOR_SESSIONS`          | Recommended        | LRU session cap          |
-| `FAISS_SESSION_MAX_AGE_DAYS`   | Recommended        | Startup stale cleanup    |
-| `RATE_LIMIT_UPLOAD_PER_MINUTE` | Recommended        | Upload protection        |
-| `RATE_LIMIT_ASK_PER_MINUTE`    | Recommended        | Ask/stream protection    |
-| `SENTRY_DSN`                   | Optional           | Backend error reporting  |
-| `SENTRY_ENVIRONMENT`           | Optional           | Sentry environment tag   |
+REDIS_URL=redis://redis:6379
 
-#### Optional provider fallbacks
+QDRANT_URL=http://qdrant:6333
 
-```env
-GROQ_API_KEY=
-OPENAI_DIRECT_API_KEY=
-GOOGLE_API_KEY=
-HF_API_KEY=
+JWT_SECRET=change_this
 ```
 
 ---
 
-### Frontend (`frontend/.env`)
+# Run with Docker Compose
 
-For local dev you can run with default assumptions, but recommended:
+## Production Mode
 
 ```bash
-cd frontend
-cp .env.example .env
+docker compose up -d --build
 ```
 
-Key variables:
-
-| Variable                          | Required          | Purpose                    |
-| --------------------------------- | ----------------- | -------------------------- |
-| `VITE_API_BASE_URL`               | Yes in production | Backend public base URL    |
-| `VITE_DEV_PROXY_TARGET`           | Optional          | Local Vite proxy target    |
-| `VITE_FAISS_SESSION_MAX_AGE_DAYS` | Optional          | UI retention text parity   |
-| `VITE_SENTRY_DSN`                 | Optional          | Browser Sentry             |
-| `VITE_SENTRY_TRACES_RATE`         | Optional          | Perf tracing rate          |
-| `VITE_APP_ENV`                    | Optional          | Env label (production/dev) |
-
----
-
-## How to run locally
-
-### 1) Start backend
+## Development Mode
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# set OPENROUTER_API_KEY in .env
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
-
-Backend docs: `http://127.0.0.1:8000/docs`
 
 ---
 
-### 2) Start frontend
+# Local Services
+
+| Service      | URL                                                      |
+| ------------ | -------------------------------------------------------- |
+| Frontend     | [http://localhost:5173](http://localhost:5173)           |
+| Backend API  | [http://localhost:8000](http://localhost:8000)           |
+| Swagger Docs | [http://localhost:8000/docs](http://localhost:8000/docs) |
+| Grafana      | [http://localhost:3001](http://localhost:3001)           |
+| Prometheus   | [http://localhost:9090](http://localhost:9090)           |
+| Qdrant       | [http://localhost:6333](http://localhost:6333)           |
+
+---
+
+# Kubernetes Deployment
+
+## Apply Kubernetes Resources
 
 ```bash
-cd frontend
-npm install
-npm run dev
+kubectl apply -k infra/k8s/base
 ```
 
-Frontend app: `http://localhost:5173`
-
 ---
 
-### 3) Learning walkthrough flow
-
-1. Open chat page.
-2. Upload sample PDF.
-3. Ask summary question.
-4. Toggle Sources and Stream.
-5. Change model and compare behavior.
-6. Inspect Network tab for `/upload`, `/ask`, `/ask/stream`.
-7. Inspect backend logs to see retrieval/generation lifecycle.
-
----
-
-## How to deploy (Vercel + Coolify VPS)
-
-### Backend (Coolify)
-
-- Use `backend/Dockerfile`
-- Base Directory: `/backend`
-- Dockerfile path: `/Dockerfile`
-- Port expose: `3000`
-- Set `PORT=3000`
-- Set `CORS_ORIGINS` to your frontend domain(s)
-- Configure domains and Traefik labels for:
-  - sslip fallback host
-  - production subdomain
-
-### Frontend (Vercel)
-
-- Root Directory: `frontend`
-- Framework: Vite
-- Build command: `npm run build`
-- Output directory: `dist`
-- Install command: `npm install --legacy-peer-deps`
-- Set `VITE_API_BASE_URL=https://your-backend-domain`
-
----
-
-## How to reuse this project in your own apps
-
-### Reuse frontend UI pieces
-
-- Copy `frontend/src/components/ui` for reusable styled primitives.
-- Copy `ChatInput`, `ChatMessage`, `PDFUpload` for chat/document UX.
-- Keep shared utility `cn` from `frontend/src/lib/utils.ts`.
-
-### Reuse backend architecture
-
-- Start from `backend/app/routes` route separation.
-- Reuse `config.py` settings pattern for env-driven deployments.
-- Reuse rate-limit service for any expensive endpoint.
-- Reuse session header approach for anonymous multi-user resource isolation.
-
-### Reuse API client pattern
-
-- `frontend/src/lib/api.ts` centralizes request and header handling.
-- Adapt endpoint map and payload types for your own backend quickly.
-
----
-
-## Quality checks and scripts
-
-### Root scripts
+# Helm Deployment
 
 ```bash
-npm run lint
-npm run check
-npm run build
-npm run build:all
+helm install rag-platform ./infra/helm/rag-platform
 ```
 
-### Frontend scripts
+---
+
+# Terraform Infrastructure
+
+## AWS Production Infrastructure
 
 ```bash
-cd frontend
-npm run lint
-npm run typecheck
-npm run build
-npm audit
+cd infra/terraform/environments/production
+
+terraform init
+terraform plan
+terraform apply
 ```
 
-### Backend checks
+---
 
-```bash
-cd backend
-pip install -r requirements.txt -r requirements-dev.txt
-ruff check app
-mypy app
-python -m unittest discover -s tests -p "test_*.py"
+# CI/CD Pipeline
+
+GitHub Actions pipelines include:
+
+* Linting
+* Testing
+* Security scanning
+* Docker image build
+* Container registry push
+* Kubernetes deployment
+* Terraform validation
+* Release automation
+
+Pipeline location:
+
+```text
+.github/workflows/
 ```
 
-Current backend integration test:
+---
 
-- `backend/tests/test_chat_stream_sse.py`  
-  Validates `/ask/stream` SSE behavior (`token` + `done`) and source metadata flow.
+# Monitoring Stack
+
+## Included Services
+
+* Prometheus
+* Grafana
+* Loki
+* OpenTelemetry
+* Jaeger
+
+## Metrics Tracked
+
+* API latency
+* Container usage
+* Token consumption
+* Agent execution time
+* Vector DB performance
+* Queue metrics
+* Error rates
 
 ---
 
-## Troubleshooting notes
+# Security Notes
 
-- **CORS blocked in browser** -> ensure deployed frontend origin is present in `CORS_ORIGINS`, then redeploy backend.
-- **Vercel npm peer conflict** -> use install command with `--legacy-peer-deps`.
-- **No model response** -> verify at least one provider key is valid.
-- **Wrong/empty retrieval** -> re-upload PDF and check session header consistency.
-- **Frequent 404 probes in logs** -> expected on public servers due to internet scanners.
+Never commit:
+
+* `.env`
+* API keys
+* AWS credentials
+* Terraform state files
+* Secrets
+
+Use:
+
+* AWS Secrets Manager
+* External Secrets
+* Environment-based configuration
+
+---
+
+# Production Engineering Highlights
+
+This project demonstrates real-world experience with:
+
+* Cloud-native AI systems
+* Enterprise DevOps pipelines
+* Kubernetes deployments
+* Terraform IaC
+* AI observability
+* Production security hardening
+* Scalable multi-agent systems
+* Distributed AI infrastructure
+* Enterprise monitoring systems
 
 ---
 
-## Contributing
+# Deployment Targets
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Keep changes focused and run checks before PR.
-4. Open a PR with short summary, scope, and risk notes.
+Supported deployment targets:
+
+* Local Docker
+* VPS Deployment
+* AWS ECS
+* AWS EKS
+* Kubernetes Clusters
+* Hybrid Infrastructure
+
+---
+
+# Future Improvements
+
+* Full RBAC implementation
+* OAuth2 provider integration
+* Langfuse integration
+* Phoenix AI observability
+* Full Qdrant migration
+* Multi-region deployments
+* GPU inference workloads
+* Agent memory persistence
 
 ---
 
-## License
+# Engineering Concepts Demonstrated
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code as per the terms of the license.
-
-## Happy Coding! 🎉
-
-This is an **open-source project** - feel free to use, enhance, and extend this project further!
-
-If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://www.arnobmahmud.com](https://www.arnobmahmud.com).
-
-**Enjoy building and learning!** 🚀
-
-Thank you! 😊
+* Enterprise AI architecture
+* Production RAG systems
+* Multi-agent orchestration
+* Kubernetes operations
+* DevSecOps engineering
+* Infrastructure as Code
+* Distributed tracing
+* CI/CD automation
+* Cloud-native deployment
+* Production observability
 
 ---
+
+# Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push branch
+5. Create Pull Request
+
+---
+
+# License
+
+This project is licensed under the MIT License.
+
+---
+
+# Disclaimer
+
+This repository is intended for:
+
+* Production AI engineering
+* Enterprise architecture learning
+* DevOps & DevSecOps implementation
+* Cloud-native AI deployment
+* Multi-agent system experimentation
+
+Use responsibly and secure all production secrets properly.
+
+```
+```
